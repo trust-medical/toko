@@ -1,0 +1,21 @@
+/vendor/
+/composer.lock
+/.phpunit.cache/
+/.phpunit.result.cache
+/.pint.cache
+/.phpstan-cache
+/.idea/
+/.vscode/
+/.DS_Store
+/.env
+/.env.*
+
+# Build / distribution
+/dist/
+/build/
+
+# Logs
+*.log
+
+# OS files
+Thumbs.db
