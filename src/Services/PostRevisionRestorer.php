@@ -27,10 +27,12 @@ final class PostRevisionRestorer implements PostRevisionRestorerContract
             throw new InvalidArgumentException('Revision does not belong to the given post.');
         }
 
-        $editorId = $restoredBy?->getKey() ?? $revision->editor_user_id;
-        if ($editorId === null) {
-            throw new InvalidArgumentException('editor_user_id is required when restoring.');
+        $restoredById = $restoredBy?->getKey();
+        if ($restoredBy !== null && $restoredById === null) {
+            throw new InvalidArgumentException('restoredBy must be a persisted model.');
         }
+
+        $editorId = $restoredById ?? $revision->editor_user_id;
 
         return DB::transaction(function () use ($post, $revision, $editorId, $note): PostRevision {
             $restored = PostRevision::create([
