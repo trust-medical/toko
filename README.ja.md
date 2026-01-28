@@ -169,6 +169,17 @@ $post = $editor->update(
 );
 ```
 
+### Revision restore service
+
+既存の revision を復元して新しい revision を作成する場合は `PostRevisionRestorer` を利用します:
+
+```php
+use TrustMedical\Toko\Contracts\PostRevisionRestorerContract;
+
+$restorer = app(PostRevisionRestorerContract::class);
+$restoredRevision = $restorer->restore($post, $revision, auth()->user(), 'Restore revision');
+```
+
 ### Scheduling service
 
 予約公開は `PostScheduler` で登録できます（posts の `scheduled_at` を使用）:

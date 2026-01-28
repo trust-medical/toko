@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TrustMedical\Toko\Tests\Feature;
 
 use TrustMedical\Toko\Contracts\PostEditorContract;
+use TrustMedical\Toko\Contracts\PostRevisionRestorerContract;
 use TrustMedical\Toko\Contracts\PostSchedulerContract;
 use TrustMedical\Toko\Enums\PostStatus;
 use TrustMedical\Toko\Models\Post;
@@ -559,5 +560,50 @@ final class ModelBehaviorTest extends TestCase
         $event = PostStatusEvent::query()->firstOrFail();
         $this->assertSame(PostStatus::Draft, $event->from_status);
         $this->assertSame(PostStatus::Archived, $event->to_status);
+    }
+
+    public function test_post_revision_restorer_creates_new_revision(): void
+    {
+        // PostRevisionRestorer が復元用の新しいrevisionを作成することを確認する
+        $user = User::create([
+            'name' => 'Restorer',
+            'email' => 'restorer@example.com',
+            'password' => 'secret',
+        ]);
+
+        $category = PostCategory::create([
+            'name' => 'Restore',
+            'slug' => 'restore',
+        ]);
+
+        $post = Post::create([
+            'author_user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Draft',
+            'slug' => 'restore-post',
+            'status' => PostStatus::Draft,
+        ]);
+
+        $revision = PostRevision::create([
+            'post_id' => $post->id,
+            'editor_user_id' => $user->id,
+            'title' => 'v1',
+            'excerpt' => 'excerpt',
+            'slug' => 'restore-slug',
+            'content_json' => ['type' => 'doc'],
+            'content_html' => '<p>v1</p>',
+            'editor' => 'tiptap',
+            'schema_version' => 1,
+        ]);
+
+        $restorer = app(PostRevisionRestorerContract::class);
+        $restored = $restorer->restore($post, $revision, $user, 'Restore revision');
+
+        $this->assertNotSame($revision->id, $restored->id);
+        $this->assertSame('v1', $restored->title);
+        $this->assertSame('excerpt', $restored->excerpt);
+        $this->assertSame('restore-slug', $restored->slug);
+        $this->assertSame(2, PostRevision::count());
+        $this->assertSame('restore-slug', $post->fresh()->slug);
     }
 }

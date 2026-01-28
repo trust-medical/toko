@@ -1,6 +1,6 @@
 {
   "name": "trust-medical/toko",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Article management models for Laravel.",
   "type": "library",
   "license": "MIT",

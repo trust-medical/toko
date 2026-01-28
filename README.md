@@ -169,6 +169,17 @@ $post = $editor->update(
 );
 ```
 
+### Revision restore service
+
+Restore a revision as a new revision with `PostRevisionRestorer`:
+
+```php
+use TrustMedical\Toko\Contracts\PostRevisionRestorerContract;
+
+$restorer = app(PostRevisionRestorerContract::class);
+$restoredRevision = $restorer->restore($post, $revision, auth()->user(), 'Restore revision');
+```
+
 ### Scheduling service
 
 Schedule a publish with a fixed revision (uses `scheduled_at` on posts):

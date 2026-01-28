@@ -9,6 +9,7 @@ use Illuminate\Support\ServiceProvider;
 use TrustMedical\Toko\Console\Commands\PublishScheduledPosts;
 use TrustMedical\Toko\Contracts\PostEditorContract;
 use TrustMedical\Toko\Contracts\PostPublisherContract;
+use TrustMedical\Toko\Contracts\PostRevisionRestorerContract;
 use TrustMedical\Toko\Contracts\PostSchedulerContract;
 use TrustMedical\Toko\Events\PostSlugChanged;
 use TrustMedical\Toko\Listeners\WriteSlugHistory;
@@ -16,6 +17,7 @@ use TrustMedical\Toko\Models\Post;
 use TrustMedical\Toko\Observers\PostObserver;
 use TrustMedical\Toko\Services\PostEditor;
 use TrustMedical\Toko\Services\PostPublisher;
+use TrustMedical\Toko\Services\PostRevisionRestorer;
 use TrustMedical\Toko\Services\PostScheduler;
 
 final class TokoServiceProvider extends ServiceProvider
@@ -28,6 +30,8 @@ final class TokoServiceProvider extends ServiceProvider
         $this->app->singleton(PostSchedulerContract::class, PostScheduler::class);
         // 記事の登録/更新サービスをDIで解決できるようにする
         $this->app->singleton(PostEditorContract::class, PostEditor::class);
+        // リビジョン復元サービスをDIで解決できるようにする
+        $this->app->singleton(PostRevisionRestorerContract::class, PostRevisionRestorer::class);
         // パッケージ設定を読み込む
         $this->mergeConfigFrom(__DIR__.'/../config/toko.php', 'toko');
     }

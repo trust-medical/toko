@@ -4,7 +4,7 @@ This document helps Codex agents quickly understand and work on this repository.
 
 ## Project overview
 - Package: trust-medical/toko
-- Purpose: Article management models for Laravel (categories, posts, revisions, publish history, status events, slug history)
+- Purpose: Article management models for Laravel (categories, posts, revisions, schedules, publish history, status events, slug history)
 - PHP: 8.3+
 - Laravel: 11 / 12
 
@@ -17,14 +17,18 @@ This document helps Codex agents quickly understand and work on this repository.
 - `resources/boost/guidelines/` Laravel Boost guidelines
 
 ## Important classes
-- Models: `Post`, `PostCategory`, `PostRevision`, `PostRevisionPublish`, `PostStatusEvent`, `PostSlugHistory`
+- Models: `Post`, `PostCategory`, `PostRevision`, `PostRevisionPublish`, `PostRevisionSchedule`, `PostStatusEvent`, `PostSlugHistory`
 - Enum: `PostStatus`
-- Service: `PostPublisher` (publishing flow)
+- Services: `PostPublisher` (publishing flow), `PostScheduler` (scheduling flow), `PostEditor` (create/update post + revision), `PostRevisionRestorer` (restore revision)
 - Observer: `PostObserver` (slug history)
 - Helper: `CategoryTreeBuilder`
 
 ## Notable behaviors
 - `Post::latestPublishedRevision()` returns the latest published revision via publish history.
+- `PostRevision` stores content + excerpt + slug; publish copies these to `Post`.
+- `PostPublisher` publishes a revision and sets `Post` as published (also clears any schedule records).
+- `PostScheduler` schedules a revision and stores reservation in `post_revision_schedules`.
+- `toko:publish-scheduled` command publishes due schedules.
 - `PostObserver` writes slug changes to `post_slug_histories`.
 - `CategoryTreeBuilder` builds category trees with posts and counts.
 - `PostStatus::getLabel()` uses translations under the `toko::post-status.*` namespace with fallback labels.
