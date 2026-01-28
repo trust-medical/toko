@@ -206,7 +206,7 @@ erDiagram
 This package uses Orchestral Testbench:
 
 ```bash
-vendor/bin/phpunit
+composer test
 ```
 
 ## Linting

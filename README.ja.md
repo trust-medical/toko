@@ -204,7 +204,7 @@ erDiagram
 テストは Orchestral Testbench を利用します。実行方法:
 
 ```bash
-vendor/bin/phpunit
+composer test
 ```
 
 ## Linting
