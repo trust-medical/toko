@@ -14,10 +14,14 @@ final class PostRevisionFactory extends Factory
 
     public function definition(): array
     {
+        $title = $this->faker->sentence(4);
+
         return [
             'post_id' => Post::factory(),
             'editor_user_id' => 1,
-            'title' => $this->faker->sentence(4),
+            'title' => $title,
+            'excerpt' => $this->faker->sentence(6),
+            'slug' => $this->faker->slug(3),
             'content_json' => [
                 'type' => 'doc',
                 'content' => [

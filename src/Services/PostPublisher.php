@@ -52,6 +52,9 @@ final class PostPublisher implements PostPublisherContract
             $post->forceFill([
                 'status' => PostStatus::Published,
                 'published_at' => $publishedAt,
+                'title' => $revision->title ?? $post->title,
+                'excerpt' => $revision->excerpt ?? $post->excerpt,
+                'slug' => $revision->slug ?? $post->slug,
             ])->save();
 
             PostRevisionSchedule::where('post_id', $post->id)->delete();

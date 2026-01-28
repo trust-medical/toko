@@ -36,9 +36,10 @@ php artisan migrate
 | Model / Enum | Responsibility |
 | --- | --- |
 | `TrustMedical\Toko\Models\PostCategory` | Manages hierarchical categories (parent/child, ordering). |
-| `TrustMedical\Toko\Models\Post` | Stores post metadata (author, category, status, publish time, slug). |
-| `TrustMedical\Toko\Models\PostRevision` | Manages content revisions (TipTap JSON + HTML cache). |
+| `TrustMedical\Toko\Models\Post` | Stores the current state (author, category, status, publish/schedule time, excerpt, slug). |
+| `TrustMedical\Toko\Models\PostRevision` | Manages revisions (content, excerpt, slug, HTML cache). |
 | `TrustMedical\Toko\Models\PostRevisionPublish` | Records which revision was published, when, and by whom. |
+| `TrustMedical\Toko\Models\PostRevisionSchedule` | Stores which revision is scheduled and who scheduled it. |
 | `TrustMedical\Toko\Models\PostStatusEvent` | Audit log for status transitions (from/to, actor, timestamp). |
 | `TrustMedical\Toko\Models\PostSlugHistory` | Keeps slug change history for redirects, etc. |
 | `TrustMedical\Toko\Enums\PostStatus` | Enum for draft/scheduled/published/archived. |

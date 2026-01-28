@@ -45,6 +45,11 @@ final class PostEditor implements PostEditorContract
             : $defaultStatus;
 
         $postData = Arr::except($postAttributes, ['status', 'published_at', 'scheduled_at']);
+        foreach (['title', 'excerpt', 'slug'] as $field) {
+            if (! array_key_exists($field, $postData) && array_key_exists($field, $revisionAttributes)) {
+                $postData[$field] = $revisionAttributes[$field];
+            }
+        }
         if ($author !== null && ! array_key_exists('author_user_id', $postData)) {
             $postData['author_user_id'] = $author->getKey();
         }
@@ -55,7 +60,7 @@ final class PostEditor implements PostEditorContract
 
         return DB::transaction(function () use ($postData, $revisionAttributes, $editor, $author, $note, $targetStatus, $initialStatus, $postAttributes): Post {
             $post = Post::create($postData);
-            $revision = $this->createRevision($post, $revisionAttributes, $editor ?? $author);
+            $revision = $this->createRevision($post, $revisionAttributes, $editor ?? $author, $postData);
 
             if ($targetStatus !== $initialStatus) {
                 $this->applyStatusChange($post, $revision, $targetStatus, $editor ?? $author, $note, $postAttributes);
@@ -82,6 +87,13 @@ final class PostEditor implements PostEditorContract
             : $fromStatus;
 
         $postData = Arr::except($postAttributes, ['status', 'published_at', 'scheduled_at']);
+        $statusForPostUpdate = $targetStatus;
+        if ($fromStatus === PostStatus::Published || $targetStatus === PostStatus::Published) {
+            $statusForPostUpdate = PostStatus::Published;
+        }
+        if ($statusForPostUpdate === PostStatus::Published) {
+            $postData = Arr::except($postData, ['title', 'excerpt', 'slug']);
+        }
 
         return DB::transaction(function () use ($post, $postData, $revisionAttributes, $changedBy, $note, $fromStatus, $targetStatus, $postAttributes): Post {
             if ($postData !== []) {
@@ -90,7 +102,7 @@ final class PostEditor implements PostEditorContract
 
             $revision = null;
             if ($revisionAttributes !== []) {
-                $revision = $this->createRevision($post, $revisionAttributes, $changedBy);
+                $revision = $this->createRevision($post, $revisionAttributes, $changedBy, $postAttributes);
             }
 
             if ($targetStatus !== $fromStatus) {
@@ -238,18 +250,24 @@ final class PostEditor implements PostEditorContract
 
     /**
      * @param  array<string, mixed>  $revisionAttributes
+     * @param  array<string, mixed>  $fallbackAttributes
      */
-    private function createRevision(Post $post, array $revisionAttributes, ?Model $editor): PostRevision
+    private function createRevision(Post $post, array $revisionAttributes, ?Model $editor, array $fallbackAttributes = []): PostRevision
     {
         $editorId = $revisionAttributes['editor_user_id'] ?? $editor?->getKey();
         if ($editorId === null) {
             throw new InvalidArgumentException('editor_user_id is required when creating a revision.');
         }
 
-        $payload = array_merge($revisionAttributes, [
+        $defaults = Arr::only($fallbackAttributes, ['title', 'excerpt', 'slug']);
+        $payload = array_merge($defaults, $revisionAttributes, [
             'post_id' => $post->id,
             'editor_user_id' => $editorId,
         ]);
+
+        if (! array_key_exists('title', $payload) || $payload['title'] === null || $payload['title'] === '') {
+            throw new InvalidArgumentException('title is required when creating a revision.');
+        }
 
         return PostRevision::create($payload);
     }

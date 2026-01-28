@@ -15,6 +15,8 @@ use TrustMedical\Toko\Models\Concerns\ResolvesUserModel;
  * @property int $post_id
  * @property int $editor_user_id
  * @property string $title
+ * @property string|null $excerpt
+ * @property string|null $slug
  * @property array<string, mixed> $content_json
  * @property string|null $content_html
  * @property string $editor
@@ -43,6 +45,8 @@ final class PostRevision extends Model
         'post_id',
         'editor_user_id',
         'title',
+        'excerpt',
+        'slug',
         'content_json',
         'content_html',
         'editor',

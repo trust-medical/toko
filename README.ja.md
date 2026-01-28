@@ -36,9 +36,10 @@ php artisan migrate
 | Model / Enum | 責務 |
 | --- | --- |
 | `TrustMedical\Toko\Models\PostCategory` | 階層カテゴリ（親子関係・並び順）を管理する。 |
-| `TrustMedical\Toko\Models\Post` | 記事のメタ情報（著者、カテゴリ、ステータス、公開日時、slug）を保持する。 |
-| `TrustMedical\Toko\Models\PostRevision` | 記事本文の版管理（TipTap JSON と公開用 HTML キャッシュ）を保持する。 |
+| `TrustMedical\Toko\Models\Post` | 記事の現在値（著者、カテゴリ、ステータス、公開日時/予約日時、excerpt、slug）を保持する。 |
+| `TrustMedical\Toko\Models\PostRevision` | 記事の版管理（本文、excerpt、slug、公開用 HTML キャッシュ）を保持する。 |
 | `TrustMedical\Toko\Models\PostRevisionPublish` | どの revision がいつ誰によって公開されたかの履歴を保持する。 |
+| `TrustMedical\Toko\Models\PostRevisionSchedule` | 予約公開の対象 revision と予約者を保持する。 |
 | `TrustMedical\Toko\Models\PostStatusEvent` | ステータス遷移（from/to、変更者、変更時刻）を監査ログとして保持する。 |
 | `TrustMedical\Toko\Models\PostSlugHistory` | slug 変更履歴（旧slug）を保持しリダイレクト等に活用する。 |
 | `TrustMedical\Toko\Enums\PostStatus` | 記事の状態（draft/scheduled/published/archived）を表す enum。 |
