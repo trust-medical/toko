@@ -129,6 +129,24 @@ $publisher = app(PostPublisherContract::class);
 $publisher->publish($post, $revision, auth()->user(), now(), 'Publish from UI');
 ```
 
+### Scheduling service
+
+予約公開は `PostScheduler` で登録できます（posts の `scheduled_at` を使用）:
+
+```php
+use TrustMedical\Toko\Contracts\PostSchedulerContract;
+
+$scheduledAt = now()->addDay();
+$scheduler = app(PostSchedulerContract::class);
+$scheduler->schedule($post, $revision, $scheduledAt, auth()->user(), 'Schedule from UI');
+```
+
+予約公開の実行はコマンドで行います:
+
+```bash
+php artisan toko:publish-scheduled
+```
+
 ### Slug history
 
 `Post` の `slug` 変更は自動で履歴保存されます。

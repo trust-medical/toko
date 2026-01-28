@@ -24,12 +24,14 @@ use TrustMedical\Toko\Models\Concerns\ResolvesUserModel;
  * @property string $slug
  * @property PostStatus|int $status
  * @property \Illuminate\Support\Carbon|null $published_at
+ * @property \Illuminate\Support\Carbon|null $scheduled_at
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read Model $author
  * @property-read PostCategory $category
  * @property-read \Illuminate\Database\Eloquent\Collection<int, PostRevision> $revisions
  * @property-read \Illuminate\Database\Eloquent\Collection<int, PostRevisionPublish> $revisionPublishes
+ * @property-read PostRevisionSchedule|null $revisionSchedule
  * @property-read \Illuminate\Database\Eloquent\Collection<int, PostStatusEvent> $statusEvents
  * @property-read \Illuminate\Database\Eloquent\Collection<int, PostSlugHistory> $slugHistories
  * @property-read PostRevisionPublish|null $latestPublishedRevisionPublish
@@ -53,12 +55,14 @@ final class Post extends Model
         'slug',
         'status',
         'published_at',
+        'scheduled_at',
     ];
 
-    // statusはenum、published_atはDateTimeキャスト
+    // statusはenum、published_at/scheduled_atはDateTimeキャスト
     protected $casts = [
         'status' => PostStatus::class,
         'published_at' => 'datetime',
+        'scheduled_at' => 'datetime',
     ];
 
     /**
@@ -94,6 +98,14 @@ final class Post extends Model
     public function revisionPublishes(): HasMany
     {
         return $this->hasMany(PostRevisionPublish::class, 'post_id');
+    }
+
+    /**
+     * @return HasOne<PostRevisionSchedule, $this>
+     */
+    public function revisionSchedule(): HasOne
+    {
+        return $this->hasOne(PostRevisionSchedule::class, 'post_id');
     }
 
     /**
@@ -219,8 +231,8 @@ final class Post extends Model
         $this->scopeScheduled($query);
 
         return $query
-            ->whereNotNull('published_at')
-            ->whereBetween('published_at', [$from, $to]);
+            ->whereNotNull('scheduled_at')
+            ->whereBetween('scheduled_at', [$from, $to]);
     }
 
     /**
@@ -229,17 +241,7 @@ final class Post extends Model
      */
     public function scopeVisible(Builder $query, ?DateTimeInterface $at = null): Builder
     {
-        $at ??= now();
-
-        return $query->where(function (Builder $builder) use ($at): void {
-            $this->scopePublishedAt($builder, $at);
-            $builder->orWhere(function (Builder $inner) use ($at): void {
-                $this->scopeScheduled($inner);
-                $inner
-                    ->whereNotNull('published_at')
-                    ->where('published_at', '<=', $at);
-            });
-        });
+        return $this->scopePublishedAt($query, $at);
     }
 
     protected static function newFactory(): PostFactory

@@ -15,6 +15,7 @@ final class SchemaTest extends TestCase
         $this->assertTrue(Schema::hasTable('posts'));
         $this->assertTrue(Schema::hasTable('post_revisions'));
         $this->assertTrue(Schema::hasTable('post_revision_publishes'));
+        $this->assertTrue(Schema::hasTable('post_revision_schedules'));
         $this->assertTrue(Schema::hasTable('post_status_events'));
         $this->assertTrue(Schema::hasTable('post_slug_histories'));
     }

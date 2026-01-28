@@ -129,6 +129,24 @@ $publisher = app(PostPublisherContract::class);
 $publisher->publish($post, $revision, auth()->user(), now(), 'Publish from UI');
 ```
 
+### Scheduling service
+
+Schedule a publish with a fixed revision (uses `scheduled_at` on posts):
+
+```php
+use TrustMedical\Toko\Contracts\PostSchedulerContract;
+
+$scheduledAt = now()->addDay();
+$scheduler = app(PostSchedulerContract::class);
+$scheduler->schedule($post, $revision, $scheduledAt, auth()->user(), 'Schedule from UI');
+```
+
+Process scheduled posts via command:
+
+```bash
+php artisan toko:publish-scheduled
+```
+
 ### Slug history
 
 `Post` slug changes are stored automatically:

@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace TrustMedical\Toko\Tests\Feature;
 
+use TrustMedical\Toko\Contracts\PostSchedulerContract;
 use TrustMedical\Toko\Enums\PostStatus;
 use TrustMedical\Toko\Models\Post;
 use TrustMedical\Toko\Models\PostCategory;
 use TrustMedical\Toko\Models\PostRevision;
 use TrustMedical\Toko\Models\PostRevisionPublish;
+use TrustMedical\Toko\Models\PostRevisionSchedule;
 use TrustMedical\Toko\Models\PostSlugHistory;
 use TrustMedical\Toko\Models\PostStatusEvent;
 use TrustMedical\Toko\Tests\Support\User;
@@ -139,7 +141,7 @@ final class ModelBehaviorTest extends TestCase
             'title' => 'Scheduled',
             'slug' => 'child-scheduled',
             'status' => PostStatus::Scheduled,
-            'published_at' => now()->addDay(),
+            'scheduled_at' => now()->addDay(),
         ]);
 
         $tree = PostCategory::treeWithPublishedPosts();
@@ -339,6 +341,99 @@ final class ModelBehaviorTest extends TestCase
         $this->assertTrue($publish->revision->is($revision));
         $this->assertSame(PostStatus::Published, $post->status);
         $this->assertSame(1, PostStatusEvent::count());
+        $this->assertSame(1, PostRevisionPublish::count());
+    }
+
+    public function test_post_scheduler_service(): void
+    {
+        // PostScheduler が予約登録と履歴生成を一括で行うことを確認する
+        $user = User::create([
+            'name' => 'Scheduler',
+            'email' => 'scheduler-service@example.com',
+            'password' => 'secret',
+        ]);
+
+        $category = PostCategory::create([
+            'name' => 'Schedule',
+            'slug' => 'schedule',
+        ]);
+
+        $post = Post::create([
+            'author_user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Schedule Post',
+            'slug' => 'schedule-post',
+            'status' => PostStatus::Draft,
+        ]);
+
+        $revision = PostRevision::create([
+            'post_id' => $post->id,
+            'editor_user_id' => $user->id,
+            'title' => 'Schedule v1',
+            'content_json' => ['type' => 'doc'],
+            'content_html' => '<p>Schedule</p>',
+            'editor' => 'tiptap',
+            'schema_version' => 1,
+        ]);
+
+        $scheduledAt = now()->addHour()->setMicrosecond(0);
+        $scheduler = app(PostSchedulerContract::class);
+        $schedule = $scheduler->schedule($post, $revision, $scheduledAt, $user, 'Schedule via service');
+
+        $post = $post->fresh();
+
+        $this->assertTrue($schedule->revision->is($revision));
+        $this->assertSame(PostStatus::Scheduled, $post->status);
+        $this->assertNull($post->published_at);
+        $this->assertSame($scheduledAt->format('Y-m-d H:i:s'), $post->scheduled_at?->format('Y-m-d H:i:s'));
+        $this->assertSame(1, PostRevisionSchedule::count());
+        $this->assertSame(1, PostStatusEvent::count());
+    }
+
+    public function test_publish_scheduled_posts_command(): void
+    {
+        // 予約公開コマンドで公開されることを確認する
+        $user = User::create([
+            'name' => 'Scheduler',
+            'email' => 'scheduler-command@example.com',
+            'password' => 'secret',
+        ]);
+
+        $category = PostCategory::create([
+            'name' => 'Schedule',
+            'slug' => 'schedule-command',
+        ]);
+
+        $post = Post::create([
+            'author_user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Schedule Post',
+            'slug' => 'schedule-command-post',
+            'status' => PostStatus::Draft,
+        ]);
+
+        $revision = PostRevision::create([
+            'post_id' => $post->id,
+            'editor_user_id' => $user->id,
+            'title' => 'Schedule v1',
+            'content_json' => ['type' => 'doc'],
+            'content_html' => '<p>Schedule</p>',
+            'editor' => 'tiptap',
+            'schema_version' => 1,
+        ]);
+
+        $scheduledAt = now()->subMinute()->setMicrosecond(0);
+        $scheduler = app(PostSchedulerContract::class);
+        $scheduler->schedule($post, $revision, $scheduledAt, $user, 'Schedule via command');
+
+        $this->artisan('toko:publish-scheduled')->assertExitCode(0);
+
+        $post = $post->fresh();
+
+        $this->assertSame(PostStatus::Published, $post->status);
+        $this->assertSame($scheduledAt->format('Y-m-d H:i:s'), $post->scheduled_at?->format('Y-m-d H:i:s'));
+        $this->assertSame($scheduledAt->format('Y-m-d H:i:s'), $post->published_at?->format('Y-m-d H:i:s'));
+        $this->assertSame(0, PostRevisionSchedule::count());
         $this->assertSame(1, PostRevisionPublish::count());
     }
 

@@ -15,6 +15,7 @@ use TrustMedical\Toko\Events\PostStatusChanged;
 use TrustMedical\Toko\Models\Post;
 use TrustMedical\Toko\Models\PostRevision;
 use TrustMedical\Toko\Models\PostRevisionPublish;
+use TrustMedical\Toko\Models\PostRevisionSchedule;
 use TrustMedical\Toko\Models\PostStatusEvent;
 
 final class PostPublisher implements PostPublisherContract
@@ -52,6 +53,8 @@ final class PostPublisher implements PostPublisherContract
                 'status' => PostStatus::Published,
                 'published_at' => $publishedAt,
             ])->save();
+
+            PostRevisionSchedule::where('post_id', $post->id)->delete();
 
             PostStatusEvent::create([
                 'post_id' => $post->id,
