@@ -1,6 +1,6 @@
 {
   "name": "trust-medical/toko",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Article management models for Laravel.",
   "type": "library",
   "license": "MIT",
@@ -13,7 +13,8 @@
     "laravel/pint": "^1.0",
     "larastan/larastan": "^3.0",
     "orchestra/testbench": "^9.0|^10.0",
-    "phpunit/phpunit": "^10.0|^11.0"
+    "phpunit/phpunit": "^10.0|^11.0",
+    "filament/support": "^4.0"
   },
   "autoload": {
     "psr-4": {
