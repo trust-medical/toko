@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace TrustMedical\Toko\Enums;
 
+use TrustMedical\Toko\Contracts\HasColor;
 use TrustMedical\Toko\Contracts\HasLabel;
 
-enum PostStatus: int implements HasLabel
+enum PostStatus: int implements HasLabel, HasColor
 {
     case Draft = 0;
     case Scheduled = 1;
@@ -20,6 +21,16 @@ enum PostStatus: int implements HasLabel
             self::Scheduled => 'Scheduled',
             self::Published => 'Published',
             self::Archived => 'Archived',
+        };
+    }
+
+    public function getColor(): string | array | null
+    {
+        return match ($this) {
+            self::Draft => 'gray',
+            self::Scheduled => 'warning',
+            self::Published => 'success',
+            self::Archived => 'danger',
         };
     }
 }
