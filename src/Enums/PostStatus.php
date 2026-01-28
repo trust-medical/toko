@@ -7,7 +7,7 @@ namespace TrustMedical\Toko\Enums;
 use TrustMedical\Toko\Contracts\HasColor;
 use TrustMedical\Toko\Contracts\HasLabel;
 
-enum PostStatus: int implements HasLabel, HasColor
+enum PostStatus: int implements HasColor, HasLabel
 {
     case Draft = 0;
     case Scheduled = 1;
@@ -24,7 +24,7 @@ enum PostStatus: int implements HasLabel, HasColor
         };
     }
 
-    public function getColor(): string | array | null
+    public function getColor(): string
     {
         return match ($this) {
             self::Draft => 'gray',

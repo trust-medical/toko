@@ -9,6 +9,9 @@ if (interface_exists(\Filament\Support\Contracts\HasColor::class)) {
 } else {
     interface HasColor
     {
-        public function getColor(): string | array | null;
+        /**
+         * @return string|array<string>|null
+         */
+        public function getColor(): string|array|null;
     }
 }
