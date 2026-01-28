@@ -34,3 +34,4 @@ $post = Post::create([
 
 - User relations resolve via config('auth.providers.users.model') and fall back to App\Models\User.
 - Run migrations after installation: php artisan migrate.
+- PostStatus labels are translatable via the `toko::post-status.*` namespace and can be overridden by publishing `toko-translations`.

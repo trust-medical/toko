@@ -27,6 +27,7 @@ This document helps Codex agents quickly understand and work on this repository.
 - `Post::latestPublishedRevision()` returns the latest published revision via publish history.
 - `PostObserver` writes slug changes to `post_slug_histories`.
 - `CategoryTreeBuilder` builds category trees with posts and counts.
+- `PostStatus::getLabel()` uses translations under the `toko::post-status.*` namespace with fallback labels.
 
 ## Common commands
 - Install deps: `composer install`
