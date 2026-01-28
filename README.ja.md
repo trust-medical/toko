@@ -147,6 +147,30 @@ $scheduler->schedule($post, $revision, $scheduledAt, auth()->user(), 'Schedule f
 php artisan toko:publish-scheduled
 ```
 
+### Scheduler setup
+
+`routes/console.php` にスケジュールを登録します:
+
+```php
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command('toko:publish-scheduled')
+    ->everyMinute()
+    ->withoutOverlapping();
+```
+
+サーバー側で Laravel の scheduler を動かす cron を 1 つだけ追加します:
+
+```bash
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+ローカル開発では次のコマンドでも動かせます:
+
+```bash
+php artisan schedule:work
+```
+
 ### Slug history
 
 `Post` の `slug` 変更は自動で履歴保存されます。

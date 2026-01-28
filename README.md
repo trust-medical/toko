@@ -147,6 +147,30 @@ Process scheduled posts via command:
 php artisan toko:publish-scheduled
 ```
 
+### Scheduler setup
+
+Register the scheduled command in `routes/console.php`:
+
+```php
+use Illuminate\Support\Facades\Schedule;
+
+Schedule::command('toko:publish-scheduled')
+    ->everyMinute()
+    ->withoutOverlapping();
+```
+
+Add a single cron entry on the server to run Laravel's scheduler:
+
+```bash
+* * * * * cd /path-to-your-project && php artisan schedule:run >> /dev/null 2>&1
+```
+
+For local development, you can run:
+
+```bash
+php artisan schedule:work
+```
+
 ### Slug history
 
 `Post` slug changes are stored automatically:
