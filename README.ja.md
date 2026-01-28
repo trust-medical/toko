@@ -129,6 +129,45 @@ $publisher = app(PostPublisherContract::class);
 $publisher->publish($post, $revision, auth()->user(), now(), 'Publish from UI');
 ```
 
+### Editing service
+
+記事の登録・更新は `PostEditor` でまとめて扱えます:
+
+```php
+use TrustMedical\Toko\Contracts\PostEditorContract;
+use TrustMedical\Toko\Enums\PostStatus;
+
+$editor = app(PostEditorContract::class);
+
+$post = $editor->create(
+    [
+        'author_user_id' => auth()->id(),
+        'category_id' => $categoryId,
+        'title' => 'New Post',
+        'slug' => 'new-post',
+        'status' => PostStatus::Draft,
+    ],
+    [
+        'title' => 'New Post',
+        'content_json' => $content,
+        'content_html' => $contentHtml,
+        'editor' => 'tiptap',
+        'schema_version' => 1,
+    ],
+    auth()->user(),
+    auth()->user(),
+    'Create via editor'
+);
+
+$post = $editor->update(
+    $post,
+    ['status' => PostStatus::Archived],
+    [],
+    auth()->user(),
+    'Archive via editor'
+);
+```
+
 ### Scheduling service
 
 予約公開は `PostScheduler` で登録できます（posts の `scheduled_at` を使用）:

@@ -129,6 +129,45 @@ $publisher = app(PostPublisherContract::class);
 $publisher->publish($post, $revision, auth()->user(), now(), 'Publish from UI');
 ```
 
+### Editing service
+
+Create or update posts and revisions with `PostEditor`:
+
+```php
+use TrustMedical\Toko\Contracts\PostEditorContract;
+use TrustMedical\Toko\Enums\PostStatus;
+
+$editor = app(PostEditorContract::class);
+
+$post = $editor->create(
+    [
+        'author_user_id' => auth()->id(),
+        'category_id' => $categoryId,
+        'title' => 'New Post',
+        'slug' => 'new-post',
+        'status' => PostStatus::Draft,
+    ],
+    [
+        'title' => 'New Post',
+        'content_json' => $content,
+        'content_html' => $contentHtml,
+        'editor' => 'tiptap',
+        'schema_version' => 1,
+    ],
+    auth()->user(),
+    auth()->user(),
+    'Create via editor'
+);
+
+$post = $editor->update(
+    $post,
+    ['status' => PostStatus::Archived],
+    [],
+    auth()->user(),
+    'Archive via editor'
+);
+```
+
 ### Scheduling service
 
 Schedule a publish with a fixed revision (uses `scheduled_at` on posts):

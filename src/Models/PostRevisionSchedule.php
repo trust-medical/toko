@@ -13,8 +13,8 @@ use TrustMedical\Toko\Models\Concerns\ResolvesUserModel;
 /**
  * @property int $id
  * @property int $post_id
- * @property int $revision_id
- * @property int $scheduled_by_user_id
+ * @property int|null $revision_id
+ * @property int|null $scheduled_by_user_id
  * @property string|null $note
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon $updated_at

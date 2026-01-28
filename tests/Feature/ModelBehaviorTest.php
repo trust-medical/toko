@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TrustMedical\Toko\Tests\Feature;
 
+use TrustMedical\Toko\Contracts\PostEditorContract;
 use TrustMedical\Toko\Contracts\PostSchedulerContract;
 use TrustMedical\Toko\Enums\PostStatus;
 use TrustMedical\Toko\Models\Post;
@@ -473,5 +474,90 @@ final class ModelBehaviorTest extends TestCase
         $this->assertSame(PostStatus::Draft, $event->from_status);
         $this->assertSame(PostStatus::Published, $event->to_status);
         $this->assertTrue($event->changedBy->is($user));
+    }
+
+    public function test_post_editor_create_with_schedule(): void
+    {
+        // PostEditor で予約公開の作成ができることを確認する
+        $user = User::create([
+            'name' => 'Editor',
+            'email' => 'post-editor@example.com',
+            'password' => 'secret',
+        ]);
+
+        $category = PostCategory::create([
+            'name' => 'Editor',
+            'slug' => 'editor',
+        ]);
+
+        $scheduledAt = now()->addHour()->setMicrosecond(0);
+
+        $editor = app(PostEditorContract::class);
+        $post = $editor->create(
+            [
+                'author_user_id' => $user->id,
+                'category_id' => $category->id,
+                'title' => 'Scheduled Post',
+                'slug' => 'scheduled-post',
+                'status' => PostStatus::Scheduled,
+                'scheduled_at' => $scheduledAt,
+            ],
+            [
+                'title' => 'Scheduled v1',
+                'content_json' => ['type' => 'doc'],
+                'content_html' => '<p>Schedule</p>',
+                'editor' => 'tiptap',
+                'schema_version' => 1,
+            ],
+            $user,
+            $user,
+            'Schedule via editor'
+        );
+
+        $post = $post->fresh();
+
+        $this->assertSame(PostStatus::Scheduled, $post->status);
+        $this->assertNull($post->published_at);
+        $this->assertSame($scheduledAt->format('Y-m-d H:i:s'), $post->scheduled_at?->format('Y-m-d H:i:s'));
+        $this->assertSame(1, PostRevisionSchedule::count());
+        $this->assertSame(1, PostStatusEvent::count());
+    }
+
+    public function test_post_editor_updates_status_event(): void
+    {
+        // PostEditor でステータス変更履歴が記録されることを確認する
+        $user = User::create([
+            'name' => 'Editor',
+            'email' => 'post-editor-status@example.com',
+            'password' => 'secret',
+        ]);
+
+        $category = PostCategory::create([
+            'name' => 'Editor',
+            'slug' => 'editor-status',
+        ]);
+
+        $post = Post::create([
+            'author_user_id' => $user->id,
+            'category_id' => $category->id,
+            'title' => 'Draft',
+            'slug' => 'draft-status',
+            'status' => PostStatus::Draft,
+        ]);
+
+        $editor = app(PostEditorContract::class);
+        $post = $editor->update(
+            $post,
+            ['status' => PostStatus::Archived],
+            [],
+            $user,
+            'Archive via editor'
+        );
+
+        $this->assertSame(PostStatus::Archived, $post->status);
+        $this->assertSame(1, PostStatusEvent::count());
+        $event = PostStatusEvent::query()->firstOrFail();
+        $this->assertSame(PostStatus::Draft, $event->from_status);
+        $this->assertSame(PostStatus::Archived, $event->to_status);
     }
 }

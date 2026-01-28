@@ -7,12 +7,14 @@ namespace TrustMedical\Toko;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 use TrustMedical\Toko\Console\Commands\PublishScheduledPosts;
+use TrustMedical\Toko\Contracts\PostEditorContract;
 use TrustMedical\Toko\Contracts\PostPublisherContract;
 use TrustMedical\Toko\Contracts\PostSchedulerContract;
 use TrustMedical\Toko\Events\PostSlugChanged;
 use TrustMedical\Toko\Listeners\WriteSlugHistory;
 use TrustMedical\Toko\Models\Post;
 use TrustMedical\Toko\Observers\PostObserver;
+use TrustMedical\Toko\Services\PostEditor;
 use TrustMedical\Toko\Services\PostPublisher;
 use TrustMedical\Toko\Services\PostScheduler;
 
@@ -24,6 +26,8 @@ final class TokoServiceProvider extends ServiceProvider
         $this->app->singleton(PostPublisherContract::class, PostPublisher::class);
         // 予約公開のサービスをDIで解決できるようにする
         $this->app->singleton(PostSchedulerContract::class, PostScheduler::class);
+        // 記事の登録/更新サービスをDIで解決できるようにする
+        $this->app->singleton(PostEditorContract::class, PostEditor::class);
         // パッケージ設定を読み込む
         $this->mergeConfigFrom(__DIR__.'/../config/toko.php', 'toko');
     }
