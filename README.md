@@ -74,6 +74,20 @@ use TrustMedical\Toko\Enums\PostStatus;
 PostStatus::Draft->getLabel(); // "Draft"
 ```
 
+Labels are translatable via Laravel translations. Package defaults live under the `toko::` namespace:
+
+```php
+__('toko::post-status.draft'); // "Draft" (or translated)
+```
+
+To override in the host app, publish translations and edit the vendor files:
+
+```bash
+php artisan vendor:publish --tag=toko-translations
+```
+
+Then edit `resources/lang/vendor/toko/{locale}/post-status.php`.
+
 ### Scopes
 
 `Post` provides convenience scopes:

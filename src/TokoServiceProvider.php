@@ -27,6 +27,8 @@ final class TokoServiceProvider extends ServiceProvider
     {
         // パッケージのマイグレーションを読み込む
         $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+        // パッケージの翻訳を読み込む
+        $this->loadTranslationsFrom(__DIR__.'/../resources/lang', 'toko');
 
         // slug変更の履歴を自動で保存
         Post::observe(PostObserver::class);
@@ -43,5 +45,10 @@ final class TokoServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__.'/../config/toko.php' => config_path('toko.php'),
         ], 'toko-config');
+
+        // 翻訳ファイルを公開できるようにする
+        $this->publishes([
+            __DIR__.'/../resources/lang' => resource_path('lang/vendor/toko'),
+        ], 'toko-translations');
     }
 }

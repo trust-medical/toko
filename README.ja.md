@@ -74,6 +74,20 @@ use TrustMedical\Toko\Enums\PostStatus;
 PostStatus::Draft->getLabel(); // "Draft"
 ```
 
+ラベルは Laravel の翻訳に対応しており、パッケージの既定値は `toko::` 名前空間にあります:
+
+```php
+__('toko::post-status.draft'); // "Draft"（または翻訳済み）
+```
+
+ホストアプリ側で上書きする場合は翻訳ファイルを公開して編集します:
+
+```bash
+php artisan vendor:publish --tag=toko-translations
+```
+
+その後 `resources/lang/vendor/toko/{locale}/post-status.php` を編集してください。
+
 ### Scopes
 
 `Post` には便利な scopes が含まれます:

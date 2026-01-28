@@ -16,12 +16,17 @@ enum PostStatus: int implements HasColor, HasLabel
 
     public function getLabel(): string
     {
-        return match ($this) {
-            self::Draft => 'Draft',
-            self::Scheduled => 'Scheduled',
-            self::Published => 'Published',
-            self::Archived => 'Archived',
-        };
+        $key = 'toko::post-status.'.strtolower($this->name);
+        $label = __($key);
+
+        return $label === $key
+            ? match ($this) {
+                self::Draft => 'Draft',
+                self::Scheduled => 'Scheduled',
+                self::Published => 'Published',
+                self::Archived => 'Archived',
+            }
+        : $label;
     }
 
     public function getColor(): string
