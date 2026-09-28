@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use TrustMedical\Toko\Database\Factories\PostCategoryFactory;
 use TrustMedical\Toko\Support\CategoryTreeBuilder;
@@ -20,8 +21,8 @@ use TrustMedical\Toko\Support\CategoryTreeBuilder;
  * @property string $name
  * @property string $slug
  * @property int $sort_order
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read PostCategory|null $parent
  * @property-read \Illuminate\Database\Eloquent\Collection<int, PostCategory> $children
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Post> $posts

@@ -7,6 +7,7 @@ namespace TrustMedical\Toko\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use TrustMedical\Toko\Database\Factories\PostRevisionPublishFactory;
 use TrustMedical\Toko\Models\Concerns\ResolvesUserModel;
 
@@ -14,11 +15,11 @@ use TrustMedical\Toko\Models\Concerns\ResolvesUserModel;
  * @property int $id
  * @property int $post_id
  * @property int $revision_id
- * @property int $published_by_user_id
- * @property \Illuminate\Support\Carbon $published_at
+ * @property int|null $published_by_user_id
+ * @property Carbon $published_at
  * @property-read Post $post
  * @property-read PostRevision $revision
- * @property-read Model $publishedBy
+ * @property-read Model|null $publishedBy
  *
  * @use HasFactory<PostRevisionPublishFactory>
  */

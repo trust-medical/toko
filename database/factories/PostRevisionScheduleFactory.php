@@ -9,6 +9,9 @@ use TrustMedical\Toko\Models\Post;
 use TrustMedical\Toko\Models\PostRevision;
 use TrustMedical\Toko\Models\PostRevisionSchedule;
 
+/**
+ * @extends Factory<PostRevisionSchedule>
+ */
 final class PostRevisionScheduleFactory extends Factory
 {
     protected $model = PostRevisionSchedule::class;

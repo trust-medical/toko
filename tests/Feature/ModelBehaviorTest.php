@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TrustMedical\Toko\Tests\Feature;
 
 use TrustMedical\Toko\Contracts\PostEditorContract;
+use TrustMedical\Toko\Contracts\PostPublisherContract;
 use TrustMedical\Toko\Contracts\PostRevisionRestorerContract;
 use TrustMedical\Toko\Contracts\PostSchedulerContract;
 use TrustMedical\Toko\Enums\PostStatus;
@@ -335,7 +336,7 @@ final class ModelBehaviorTest extends TestCase
             'schema_version' => 1,
         ]);
 
-        $publisher = app(\TrustMedical\Toko\Contracts\PostPublisherContract::class);
+        $publisher = app(PostPublisherContract::class);
         $publish = $publisher->publish($post, $revision, $user, now(), 'Publish via service');
 
         $post = $post->fresh();

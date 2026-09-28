@@ -9,6 +9,9 @@ use Illuminate\Support\Str;
 use TrustMedical\Toko\Models\Post;
 use TrustMedical\Toko\Models\PostSlugHistory;
 
+/**
+ * @extends Factory<PostSlugHistory>
+ */
 final class PostSlugHistoryFactory extends Factory
 {
     protected $model = PostSlugHistory::class;

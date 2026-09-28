@@ -7,13 +7,14 @@ namespace TrustMedical\Toko\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use TrustMedical\Toko\Database\Factories\PostSlugHistoryFactory;
 
 /**
  * @property int $id
  * @property int $post_id
  * @property string $old_slug
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon $created_at
  * @property-read Post $post
  *
  * @use HasFactory<PostSlugHistoryFactory>

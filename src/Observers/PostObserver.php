@@ -9,9 +9,10 @@ use TrustMedical\Toko\Models\Post;
 
 final class PostObserver
 {
-    public function updating(Post $post): void
+    public function updated(Post $post): void
     {
-        if (! $post->isDirty('slug')) {
+        // 保存成功後に通知し、更新失敗時に履歴だけ残らないようにする
+        if (! $post->wasChanged('slug')) {
             return;
         }
 
@@ -20,6 +21,6 @@ final class PostObserver
             return;
         }
 
-        PostSlugChanged::dispatch($post, $oldSlug, (string) $post->slug);
+        PostSlugChanged::dispatch($post, (string) $oldSlug, (string) $post->slug);
     }
 }

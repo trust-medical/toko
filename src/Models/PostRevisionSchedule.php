@@ -7,17 +7,18 @@ namespace TrustMedical\Toko\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use TrustMedical\Toko\Database\Factories\PostRevisionScheduleFactory;
 use TrustMedical\Toko\Models\Concerns\ResolvesUserModel;
 
 /**
  * @property int $id
  * @property int $post_id
- * @property int|null $revision_id
- * @property int|null $scheduled_by_user_id
+ * @property int $revision_id
+ * @property int $scheduled_by_user_id
  * @property string|null $note
- * @property \Illuminate\Support\Carbon $created_at
- * @property \Illuminate\Support\Carbon $updated_at
+ * @property Carbon $created_at
+ * @property Carbon $updated_at
  * @property-read Post $post
  * @property-read PostRevision $revision
  * @property-read Model|null $scheduledBy

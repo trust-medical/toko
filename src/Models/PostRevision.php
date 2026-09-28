@@ -7,6 +7,7 @@ namespace TrustMedical\Toko\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use TrustMedical\Toko\Database\Factories\PostRevisionFactory;
 use TrustMedical\Toko\Models\Concerns\ResolvesUserModel;
 
@@ -23,7 +24,7 @@ use TrustMedical\Toko\Models\Concerns\ResolvesUserModel;
  * @property string|null $editor_version
  * @property int $schema_version
  * @property string|null $change_note
- * @property \Illuminate\Support\Carbon $created_at
+ * @property Carbon $created_at
  * @property-read Post $post
  * @property-read Model $editorUser
  *

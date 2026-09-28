@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace TrustMedical\Toko\Contracts;
 
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 use TrustMedical\Toko\Models\Post;
 use TrustMedical\Toko\Models\PostRevision;
 use TrustMedical\Toko\Models\PostRevisionSchedule;
@@ -18,7 +18,7 @@ interface PostSchedulerContract
     public function schedule(
         Post $post,
         PostRevision $revision,
-        Carbon $scheduledAt,
+        DateTimeInterface $scheduledAt,
         ?Model $scheduledBy = null,
         ?string $note = null
     ): PostRevisionSchedule;

@@ -41,7 +41,7 @@ return new class extends Migration
             // status: 0=draft, 1=scheduled, 2=published, 3=archived
             $table->unsignedTinyInteger('status')->default(0);
 
-            // scheduled/published の公開開始日時（draftでも予約日時を持てる）
+            // 公開日時（予約日時は scheduled_at カラムで管理する）
             $table->dateTime('published_at')->nullable();
 
             $table->timestamps();

@@ -9,6 +9,9 @@ use TrustMedical\Toko\Models\Post;
 use TrustMedical\Toko\Models\PostRevision;
 use TrustMedical\Toko\Models\PostRevisionPublish;
 
+/**
+ * @extends Factory<PostRevisionPublish>
+ */
 final class PostRevisionPublishFactory extends Factory
 {
     protected $model = PostRevisionPublish::class;

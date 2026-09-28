@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use TrustMedical\Toko\Models\Post;
 use TrustMedical\Toko\Models\PostRevision;
 
+/**
+ * @extends Factory<PostRevision>
+ */
 final class PostRevisionFactory extends Factory
 {
     protected $model = PostRevision::class;
