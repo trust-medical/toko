@@ -10,6 +10,9 @@ use TrustMedical\Toko\Enums\PostStatus;
 use TrustMedical\Toko\Models\Post;
 use TrustMedical\Toko\Models\PostCategory;
 
+/**
+ * @extends Factory<Post>
+ */
 final class PostFactory extends Factory
 {
     protected $model = Post::class;
@@ -26,6 +29,7 @@ final class PostFactory extends Factory
             'slug' => Str::slug($title).'-'.$this->faker->unique()->numberBetween(1, 9999),
             'status' => PostStatus::Draft,
             'published_at' => null,
+            'scheduled_at' => null,
         ];
     }
 
@@ -44,7 +48,8 @@ final class PostFactory extends Factory
         return $this->state(function () {
             return [
                 'status' => PostStatus::Scheduled,
-                'published_at' => now()->addDays($this->faker->numberBetween(1, 7)),
+                'published_at' => null,
+                'scheduled_at' => now()->addDays($this->faker->numberBetween(1, 7)),
             ];
         });
     }

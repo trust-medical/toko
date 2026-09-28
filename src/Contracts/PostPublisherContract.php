@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace TrustMedical\Toko\Contracts;
 
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Carbon;
 use TrustMedical\Toko\Models\Post;
 use TrustMedical\Toko\Models\PostRevision;
 use TrustMedical\Toko\Models\PostRevisionPublish;
@@ -19,7 +19,7 @@ interface PostPublisherContract
         Post $post,
         PostRevision $revision,
         ?Model $publishedBy = null,
-        ?Carbon $publishedAt = null,
+        ?DateTimeInterface $publishedAt = null,
         ?string $note = null
     ): PostRevisionPublish;
 }

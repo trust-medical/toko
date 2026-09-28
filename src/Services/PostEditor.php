@@ -38,11 +38,7 @@ final class PostEditor implements PostEditorContract
         ?Model $editor = null,
         ?string $note = null
     ): Post {
-        $defaultStatus = $this->defaultStatus();
-        $targetStatus = $this->resolveStatus($postAttributes['status'] ?? $defaultStatus);
-        $initialStatus = in_array($targetStatus, [PostStatus::Published, PostStatus::Scheduled], true)
-            ? PostStatus::Draft
-            : $defaultStatus;
+        $targetStatus = $this->resolveStatus($postAttributes['status'] ?? $this->defaultStatus());
 
         $postData = Arr::except($postAttributes, ['status', 'published_at', 'scheduled_at']);
         foreach (['title', 'excerpt', 'slug'] as $field) {
@@ -54,15 +50,22 @@ final class PostEditor implements PostEditorContract
             $postData['author_user_id'] = $author->getKey();
         }
 
-        $postData['status'] = $initialStatus;
+        foreach (['author_user_id', 'category_id'] as $field) {
+            if (! isset($postData[$field])) {
+                throw new InvalidArgumentException($field.' is required when creating a post.');
+            }
+        }
+
+        // 常にDraftで作成し、目的のステータスへはサービス経由で遷移させる
+        $postData['status'] = PostStatus::Draft;
         $postData['published_at'] = null;
         $postData['scheduled_at'] = null;
 
-        return DB::transaction(function () use ($postData, $revisionAttributes, $editor, $author, $note, $targetStatus, $initialStatus, $postAttributes): Post {
+        return DB::transaction(function () use ($postData, $revisionAttributes, $editor, $author, $note, $targetStatus, $postAttributes): Post {
             $post = Post::create($postData);
             $revision = $this->createRevision($post, $revisionAttributes, $editor ?? $author, $postData);
 
-            if ($targetStatus !== $initialStatus) {
+            if ($targetStatus !== PostStatus::Draft) {
                 $this->applyStatusChange($post, $revision, $targetStatus, $editor ?? $author, $note, $postAttributes);
             }
 
@@ -81,7 +84,7 @@ final class PostEditor implements PostEditorContract
         ?Model $changedBy = null,
         ?string $note = null
     ): Post {
-        $fromStatus = $this->resolveStatus($post->status);
+        $fromStatus = $post->status;
         $targetStatus = array_key_exists('status', $postAttributes)
             ? $this->resolveStatus($postAttributes['status'])
             : $fromStatus;
@@ -127,7 +130,12 @@ final class PostEditor implements PostEditorContract
         ?string $note,
         array $postAttributes
     ): void {
-        $fromStatus = $this->resolveStatus($post->status);
+        $fromStatus = $post->status;
+
+        if (in_array($targetStatus, [PostStatus::Published, PostStatus::Scheduled], true)) {
+            // revision未指定なら最新revisionを対象にする
+            $revision ??= $this->latestRevision($post);
+        }
 
         if ($targetStatus === PostStatus::Published) {
             if ($revision === null) {
@@ -191,19 +199,14 @@ final class PostEditor implements PostEditorContract
      */
     private function applyDateAttributes(Post $post, array $postAttributes): void
     {
-        $updates = [];
-
-        if (array_key_exists('published_at', $postAttributes)) {
-            $updates['published_at'] = $this->normalizeDate($postAttributes['published_at']);
+        // 予約中はpublished_atを持たせず、scheduled_atはsyncScheduleで扱う
+        if ($post->status === PostStatus::Scheduled || ! array_key_exists('published_at', $postAttributes)) {
+            return;
         }
 
-        if (array_key_exists('scheduled_at', $postAttributes)) {
-            $updates['scheduled_at'] = $this->normalizeDate($postAttributes['scheduled_at']);
-        }
-
-        if ($updates !== []) {
-            $post->forceFill($updates)->save();
-        }
+        $post->forceFill([
+            'published_at' => $this->normalizeDate($postAttributes['published_at']),
+        ])->save();
     }
 
     /**
@@ -216,7 +219,7 @@ final class PostEditor implements PostEditorContract
         ?string $note,
         array $postAttributes
     ): void {
-        if ($this->resolveStatus($post->status) !== PostStatus::Scheduled) {
+        if ($post->status !== PostStatus::Scheduled) {
             return;
         }
 
@@ -228,24 +231,25 @@ final class PostEditor implements PostEditorContract
             throw new InvalidArgumentException('changedBy is required when scheduling.');
         }
 
-        $schedule = PostRevisionSchedule::firstOrNew([
-            'post_id' => $post->id,
-        ]);
-
-        $revisionId = $revision !== null ? $revision->id : $schedule->revision_id;
-        if ($revisionId === null) {
+        $revision ??= $post->revisionSchedule?->revision;
+        if ($revision === null) {
             throw new InvalidArgumentException('revision is required when scheduling.');
         }
 
-        $schedule->fill([
-            'revision_id' => $revisionId,
-            'scheduled_by_user_id' => $changedBy->getKey(),
-            'note' => $note,
-        ])->save();
-
-        if ($post->published_at !== null) {
-            $post->forceFill(['published_at' => null])->save();
+        $scheduledAt = array_key_exists('scheduled_at', $postAttributes)
+            ? $this->normalizeDate($postAttributes['scheduled_at'])
+            : $post->scheduled_at;
+        if ($scheduledAt === null) {
+            throw new InvalidArgumentException('scheduled_at is required when scheduling.');
         }
+
+        // 検証を一元化するため予約の更新もPostScheduler経由で行う
+        $this->scheduler->schedule($post, $revision, $scheduledAt, $changedBy, $note);
+    }
+
+    private function latestRevision(Post $post): ?PostRevision
+    {
+        return $post->revisions()->orderByDesc('id')->first();
     }
 
     /**

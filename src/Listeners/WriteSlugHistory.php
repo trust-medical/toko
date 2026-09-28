@@ -15,15 +15,13 @@ final class WriteSlugHistory
             return;
         }
 
-        // 既に履歴がある場合は重複を避ける
-        $exists = PostSlugHistory::query()->where('old_slug', $event->oldSlug)->exists();
-        if ($exists) {
-            return;
-        }
+        // 現役のslugは履歴から外す
+        PostSlugHistory::query()->where('old_slug', $event->newSlug)->delete();
 
-        PostSlugHistory::create([
-            'post_id' => $event->post->id,
-            'old_slug' => $event->oldSlug,
-        ]);
+        // 同じ旧slugは最新の持ち主で上書きする
+        PostSlugHistory::updateOrCreate(
+            ['old_slug' => $event->oldSlug],
+            ['post_id' => $event->post->id, 'created_at' => now()]
+        );
     }
 }

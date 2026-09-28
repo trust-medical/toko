@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TrustMedical\Toko\Services;
 
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +28,7 @@ final class PostPublisher implements PostPublisherContract
         Post $post,
         PostRevision $revision,
         ?Model $publishedBy = null,
-        ?Carbon $publishedAt = null,
+        ?DateTimeInterface $publishedAt = null,
         ?string $note = null
     ): PostRevisionPublish {
         if ($revision->post_id !== $post->id) {
@@ -38,8 +39,16 @@ final class PostPublisher implements PostPublisherContract
             throw new InvalidArgumentException('content_html is required when publishing.');
         }
 
-        $publishedAt ??= now();
-        $fromStatus = $post->status instanceof PostStatus ? $post->status : PostStatus::from((int) $post->status);
+        $alreadyPublished = PostRevisionPublish::query()
+            ->where('post_id', $post->id)
+            ->where('revision_id', $revision->id)
+            ->exists();
+        if ($alreadyPublished) {
+            throw new InvalidArgumentException('Revision has already been published. Restore it as a new revision to publish again.');
+        }
+
+        $publishedAt = $publishedAt !== null ? Carbon::instance($publishedAt) : now();
+        $fromStatus = $post->status;
 
         return DB::transaction(function () use ($post, $revision, $publishedBy, $publishedAt, $note, $fromStatus): PostRevisionPublish {
             $publish = PostRevisionPublish::create([
@@ -59,16 +68,19 @@ final class PostPublisher implements PostPublisherContract
 
             PostRevisionSchedule::where('post_id', $post->id)->delete();
 
-            PostStatusEvent::create([
-                'post_id' => $post->id,
-                'from_status' => $fromStatus,
-                'to_status' => PostStatus::Published,
-                'changed_by_user_id' => $publishedBy?->getKey(),
-                'note' => $note,
-                'changed_at' => $publishedAt,
-            ]);
+            // 公開中の記事に新しいrevisionを公開した場合はステータス変更として扱わない
+            if ($fromStatus !== PostStatus::Published) {
+                PostStatusEvent::create([
+                    'post_id' => $post->id,
+                    'from_status' => $fromStatus,
+                    'to_status' => PostStatus::Published,
+                    'changed_by_user_id' => $publishedBy?->getKey(),
+                    'note' => $note,
+                    'changed_at' => $publishedAt,
+                ]);
 
-            PostStatusChanged::dispatch($post, $fromStatus, PostStatus::Published, $publishedBy);
+                PostStatusChanged::dispatch($post, $fromStatus, PostStatus::Published, $publishedBy);
+            }
             PostPublished::dispatch($post, $revision, $publish, $publishedBy);
 
             return $publish;

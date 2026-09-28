@@ -7,6 +7,7 @@ namespace TrustMedical\Toko\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use TrustMedical\Toko\Database\Factories\PostStatusEventFactory;
 use TrustMedical\Toko\Enums\PostStatus;
 use TrustMedical\Toko\Models\Concerns\ResolvesUserModel;
@@ -14,11 +15,11 @@ use TrustMedical\Toko\Models\Concerns\ResolvesUserModel;
 /**
  * @property int $id
  * @property int $post_id
- * @property PostStatus|int|null $from_status
- * @property PostStatus|int $to_status
+ * @property PostStatus|null $from_status
+ * @property PostStatus $to_status
  * @property int|null $changed_by_user_id
  * @property string|null $note
- * @property \Illuminate\Support\Carbon $changed_at
+ * @property Carbon $changed_at
  * @property-read Post $post
  * @property-read Model|null $changedBy
  *

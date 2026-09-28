@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TrustMedical\Toko\Services;
 
+use DateTimeInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +25,7 @@ final class PostScheduler implements PostSchedulerContract
     public function schedule(
         Post $post,
         PostRevision $revision,
-        Carbon $scheduledAt,
+        DateTimeInterface $scheduledAt,
         ?Model $scheduledBy = null,
         ?string $note = null
     ): PostRevisionSchedule {
@@ -40,7 +41,11 @@ final class PostScheduler implements PostSchedulerContract
             throw new InvalidArgumentException('content_html is required when scheduling.');
         }
 
-        $fromStatus = $post->status instanceof PostStatus ? $post->status : PostStatus::from((int) $post->status);
+        $scheduledAt = Carbon::instance($scheduledAt);
+        $fromStatus = $post->status;
+        if ($fromStatus === PostStatus::Published) {
+            throw new InvalidArgumentException('Cannot schedule a published post.');
+        }
 
         return DB::transaction(function () use ($post, $revision, $scheduledAt, $scheduledBy, $note, $fromStatus): PostRevisionSchedule {
             $schedule = PostRevisionSchedule::updateOrCreate(
@@ -58,16 +63,19 @@ final class PostScheduler implements PostSchedulerContract
                 'scheduled_at' => $scheduledAt,
             ])->save();
 
-            PostStatusEvent::create([
-                'post_id' => $post->id,
-                'from_status' => $fromStatus,
-                'to_status' => PostStatus::Scheduled,
-                'changed_by_user_id' => $scheduledBy->getKey(),
-                'note' => $note,
-                'changed_at' => now(),
-            ]);
+            // 予約の差し替えはステータス変更として扱わない
+            if ($fromStatus !== PostStatus::Scheduled) {
+                PostStatusEvent::create([
+                    'post_id' => $post->id,
+                    'from_status' => $fromStatus,
+                    'to_status' => PostStatus::Scheduled,
+                    'changed_by_user_id' => $scheduledBy->getKey(),
+                    'note' => $note,
+                    'changed_at' => now(),
+                ]);
 
-            PostStatusChanged::dispatch($post, $fromStatus, PostStatus::Scheduled, $scheduledBy);
+                PostStatusChanged::dispatch($post, $fromStatus, PostStatus::Scheduled, $scheduledBy);
+            }
 
             return $schedule;
         });

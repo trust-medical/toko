@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TrustMedical\Toko\Tests;
 
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
+use TrustMedical\Toko\Tests\Support\User;
 use TrustMedical\Toko\TokoServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
@@ -26,7 +27,7 @@ abstract class TestCase extends OrchestraTestCase
         $app['config']->set('toko.slug_history.enabled', true);
         $app['config']->set('toko.publishing.require_content_html', true);
         // パッケージ内のユーザ関連リレーション解決先をテスト用モデルに固定
-        $app['config']->set('auth.providers.users.model', \TrustMedical\Toko\Tests\Support\User::class);
+        $app['config']->set('auth.providers.users.model', User::class);
     }
 
     protected function setUp(): void

@@ -9,6 +9,9 @@ use TrustMedical\Toko\Enums\PostStatus;
 use TrustMedical\Toko\Models\Post;
 use TrustMedical\Toko\Models\PostStatusEvent;
 
+/**
+ * @extends Factory<PostStatusEvent>
+ */
 final class PostStatusEventFactory extends Factory
 {
     protected $model = PostStatusEvent::class;

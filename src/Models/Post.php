@@ -6,11 +6,13 @@ namespace TrustMedical\Toko\Models;
 
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
 use TrustMedical\Toko\Database\Factories\PostFactory;
 use TrustMedical\Toko\Enums\PostStatus;
 use TrustMedical\Toko\Models\Concerns\ResolvesUserModel;
@@ -22,18 +24,18 @@ use TrustMedical\Toko\Models\Concerns\ResolvesUserModel;
  * @property string $title
  * @property string|null $excerpt
  * @property string $slug
- * @property PostStatus|int $status
- * @property \Illuminate\Support\Carbon|null $published_at
- * @property \Illuminate\Support\Carbon|null $scheduled_at
- * @property \Illuminate\Support\Carbon|null $created_at
- * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property PostStatus $status
+ * @property Carbon|null $published_at
+ * @property Carbon|null $scheduled_at
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
  * @property-read Model $author
  * @property-read PostCategory $category
- * @property-read \Illuminate\Database\Eloquent\Collection<int, PostRevision> $revisions
- * @property-read \Illuminate\Database\Eloquent\Collection<int, PostRevisionPublish> $revisionPublishes
+ * @property-read Collection<int, PostRevision> $revisions
+ * @property-read Collection<int, PostRevisionPublish> $revisionPublishes
  * @property-read PostRevisionSchedule|null $revisionSchedule
- * @property-read \Illuminate\Database\Eloquent\Collection<int, PostStatusEvent> $statusEvents
- * @property-read \Illuminate\Database\Eloquent\Collection<int, PostSlugHistory> $slugHistories
+ * @property-read Collection<int, PostStatusEvent> $statusEvents
+ * @property-read Collection<int, PostSlugHistory> $slugHistories
  * @property-read PostRevisionPublish|null $latestPublishedRevisionPublish
  *
  * @use HasFactory<PostFactory>

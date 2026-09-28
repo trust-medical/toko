@@ -8,6 +8,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use TrustMedical\Toko\Models\PostCategory;
 
+/**
+ * @extends Factory<PostCategory>
+ */
 final class PostCategoryFactory extends Factory
 {
     protected $model = PostCategory::class;
