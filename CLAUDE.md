@@ -83,4 +83,4 @@ Invariants the services enforce. Preserve them when changing code:
 - Add PHPDoc on relations, scopes and `@property` blocks for Larastan. Factories carry `@extends Factory<Model>`.
 - Pint (current version) converts FQCNs in PHPDoc into `use` imports. Run lint before committing.
 - Keep `README.md` and `README.ja.md` structurally in sync.
-- Record changes in `CHANGELOG.md` (Keep a Changelog) and bump `"version"` in `composer.json`. The 0.x series bumps the minor version for behavior changes, and user-facing behavior changes go in the README "Upgrading" section.
+- Record changes in `CHANGELOG.md` (Keep a Changelog). Versions come from git tags only (`vX.Y.Z`); `composer.json` has no `version` field, so don't add one. The 0.x series bumps the minor version for behavior changes, and user-facing behavior changes go in the README "Upgrading" section.

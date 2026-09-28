@@ -55,7 +55,7 @@ This document helps Codex agents quickly understand and work on this repository.
 - GitHub Actions runs tests, lint, and static analysis.
 
 ## Conventions
-- Keep `README.md` and `README.ja.md` in sync, and record changes in `CHANGELOG.md` (bump `version` in `composer.json`).
+- Keep `README.md` and `README.ja.md` in sync, and record changes in `CHANGELOG.md`. Versions are defined by git tags (`vX.Y.Z`); do not add a `version` field to `composer.json`.
 - Prefer PHPDoc on relations/scopes for Larastan.
 - Keep comments minimal and in Japanese when adding.
 - Avoid non-ASCII unless needed.

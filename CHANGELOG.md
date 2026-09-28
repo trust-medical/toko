@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `toko:publish-scheduled` processes the oldest due posts first, keeps going after a failure (exit code 1), and publishes with a `null` publisher when the scheduling user is missing.
 - Slug history is written after a successful update (`updated` event). An old slug belongs to the post that used it most recently, and slugs that become live again are removed from the history.
 - The package requires `laravel/framework` instead of individual `illuminate/*` packages.
+- Removed the `version` field from `composer.json`. Versions are defined by git tags.
+- CI uses `actions/checkout@v7` (Node.js 24).
 
 ### Removed
 - Laravel 11 support. It is past end of life and every 11.x release has unpatched security advisories. Laravel 12 is required.
