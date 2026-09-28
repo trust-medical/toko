@@ -42,7 +42,7 @@ Article management models and services for Laravel: hierarchical categories, pos
 ## Requirements
 
 - PHP 8.3+
-- Laravel 11 / 12
+- Laravel 12
 - A `users` table with integer primary keys (the foreign keys reference `users.id`)
 
 ## Installation
@@ -434,7 +434,7 @@ Guidelines ship in `resources/boost/guidelines/core.blade.php` and are picked up
 
 ### 0.7 → 0.8
 
-1. Update the package with `composer update trust-medical/toko`.
+1. Make sure the app runs on **Laravel 12**. Laravel 11 is no longer supported, because it is past end of life and has unpatched security advisories. Then update the package with `composer update trust-medical/toko`.
 2. Run `php artisan migrate` **before** the new code starts publishing (for example, before `toko:publish-scheduled` runs again). The migration makes `post_revision_publishes.published_by_user_id` nullable. Test it on a staging copy of your database first.
 3. Check existing data for states the services no longer produce. Posts created directly or with the old `scheduled()` factory state may need fixing:
 
@@ -459,7 +459,7 @@ Behavior changes:
 - Slug history is written after a successful update, and an old slug now belongs to the post that used it most recently. `PostSlugChanged` is now dispatched from the `updated` model event, after the row is saved, instead of from `updating`.
 - `toko:publish-scheduled` keeps going when a single post fails, and it exits with a non-zero code. Point your monitoring at the exit code or the logs.
 - `PostRevisionPublish::$publishedBy` can be `null`. Handle that wherever you display the publisher.
-- The package now requires `laravel/framework` instead of individual `illuminate/*` packages.
+- The package now requires `laravel/framework` ^12.0 instead of individual `illuminate/*` packages. Laravel 11 support has been dropped.
 
 See [CHANGELOG.md](CHANGELOG.md) for details.
 

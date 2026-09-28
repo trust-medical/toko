@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-`trust-medical/toko` is a Laravel 11/12 package (PHP 8.3+) that provides article management: categories, posts, immutable revisions, publish history, scheduled publishing, status audit logs and slug history. `AGENTS.md` holds a parallel summary for other agents. Keep both files consistent when behavior changes.
+`trust-medical/toko` is a Laravel 12 package (PHP 8.3+) that provides article management: categories, posts, immutable revisions, publish history, scheduled publishing, status audit logs and slug history. `AGENTS.md` holds a parallel summary for other agents. Keep both files consistent when behavior changes.
 
 ## Commands
 
@@ -21,7 +21,7 @@ docker run --rm -u "$(id -u):$(id -g)" -v "$PWD":/app -w /app composer:2 vendor/
 
 The container lacks `ext-intl`, which the dev dependency `filament/support` requires. When running `composer update` or `require` in it, add `--ignore-platform-req=ext-intl`. `composer.lock` is gitignored.
 
-CI (`.github/workflows/tests.yml`) runs phpunit, pint and phpstan across PHP 8.3/8.4 × Laravel 11/12.
+CI (`.github/workflows/tests.yml`) runs phpunit, pint and phpstan across PHP 8.3/8.4 × Laravel 12 (`fail-fast: false`).
 
 ## Architecture
 
@@ -68,7 +68,7 @@ Invariants the services enforce. Preserve them when changing code:
 ### Schema changes
 
 - Add a new migration. Don't edit shipped ones, except for comments.
-- Column changes use native `->change()` (Laravel 11+).
+- Column changes use native `->change()`.
 - `down()` must tolerate existing data. Testbench rolls migrations back on teardown, so a `down()` that fails on test data breaks the suite.
 
 ## Testing notes

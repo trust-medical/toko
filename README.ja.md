@@ -42,7 +42,7 @@ English version: [README.md](README.md)
 ## 動作要件
 
 - PHP 8.3+
-- Laravel 11 / 12
+- Laravel 12
 - 整数主キーの `users` テーブル（外部キーが `users.id` を参照します）
 
 ## インストール
@@ -434,7 +434,7 @@ $this->call(\TrustMedical\Toko\Database\Seeders\TokoSeeder::class);
 
 ### 0.7 → 0.8
 
-1. `composer update trust-medical/toko` でパッケージを更新します。
+1. アプリが **Laravel 12** で動いていることを確認してください。Laravel 11 はサポートを終了しました（EOL で、修正されていないセキュリティアドバイザリがあるため）。そのうえで `composer update trust-medical/toko` でパッケージを更新します。
 2. 新しいコードが公開処理を始める前（たとえば `toko:publish-scheduled` が次に動く前）に `php artisan migrate` を実行してください。このマイグレーションは `post_revision_publishes.published_by_user_id` を nullable にします。先にステージング環境の DB コピーで試してください。
 3. サービスではもう作られない状態のデータが残っていないか確認します。直接作成した記事や、旧 `scheduled()` factory で作った記事は修正が必要かもしれません。
 
@@ -459,7 +459,7 @@ $this->call(\TrustMedical\Toko\Database\Seeders\TokoSeeder::class);
 - slug 履歴は更新が成功した後に書き込まれ、旧 slug は最後に使っていた記事に紐づくようになりました。`PostSlugChanged` は `updating` ではなく、行の保存後の `updated` モデルイベントから発火します。
 - `toko:publish-scheduled` は 1 件の失敗で止まらず、0 以外の終了コードを返します。監視は終了コードかログで行ってください。
 - `PostRevisionPublish::$publishedBy` は `null` になることがあります。公開者を表示する箇所で考慮してください。
-- パッケージは個別の `illuminate/*` パッケージではなく `laravel/framework` を要求するようになりました。
+- パッケージは個別の `illuminate/*` パッケージではなく `laravel/framework` ^12.0 を要求するようになりました。Laravel 11 のサポートは終了しました。
 
 詳しくは [CHANGELOG.md](CHANGELOG.md) を参照してください。
 

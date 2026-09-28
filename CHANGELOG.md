@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Slug history is written after a successful update (`updated` event). An old slug belongs to the post that used it most recently, and slugs that become live again are removed from the history.
 - The package requires `laravel/framework` instead of individual `illuminate/*` packages.
 
+### Removed
+- Laravel 11 support. It is past end of life and every 11.x release has unpatched security advisories. Laravel 12 is required.
+
 ### Fixed
 - `PostRevisionRestorer` no longer writes a `null` slug/title to the post, and it copies DB default values of the source revision correctly.
 - `PostFactory::scheduled()` uses `scheduled_at` instead of a future `published_at`.

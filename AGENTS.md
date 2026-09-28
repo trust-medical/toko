@@ -6,7 +6,7 @@ This document helps Codex agents quickly understand and work on this repository.
 - Package: trust-medical/toko
 - Purpose: Article management models for Laravel (categories, posts, revisions, schedules, publish history, status events, slug history)
 - PHP: 8.3+
-- Laravel: 11 / 12
+- Laravel: 12
 
 ## Key directories
 - `src/` core package code (models, services, observers, support)
