@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-10-09
+
 ### Added
 - Laravel 13 support. `laravel/framework` is now `^12.0|^13.0`, and CI tests Laravel 12 and 13 (Testbench 10 and 11).
 
