@@ -42,7 +42,7 @@ Article management models and services for Laravel: hierarchical categories, pos
 ## Requirements
 
 - PHP 8.3+
-- Laravel 12
+- Laravel 12 or 13
 - A `users` table with integer primary keys (the foreign keys reference `users.id`)
 
 ## Installation
@@ -431,6 +431,10 @@ $this->call(\TrustMedical\Toko\Database\Seeders\TokoSeeder::class);
 Guidelines ship in `resources/boost/guidelines/core.blade.php` and are picked up automatically when the host app uses [Laravel Boost](https://github.com/laravel/boost).
 
 ## Upgrading
+
+### 0.8 → 0.9
+
+No code or schema changes are required. The package now supports **Laravel 12 and 13** (`laravel/framework` `^12.0|^13.0`). Update with `composer update trust-medical/toko`.
 
 ### 0.7 → 0.8
 

@@ -52,7 +52,7 @@ This document helps Codex agents quickly understand and work on this repository.
 - Tests live in `tests/Feature/` (`ModelBehaviorTest`, `ServiceRobustnessTest`, `SchemaTest`).
 
 ## CI
-- GitHub Actions runs tests, lint, and static analysis.
+- GitHub Actions runs tests, lint, and static analysis across PHP 8.3/8.4 and Laravel 12/13.
 
 ## Conventions
 - Keep `README.md` and `README.ja.md` in sync, and record changes in `CHANGELOG.md`. Versions are defined by git tags (`vX.Y.Z`); do not add a `version` field to `composer.json`.

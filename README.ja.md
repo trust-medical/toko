@@ -42,7 +42,7 @@ English version: [README.md](README.md)
 ## 動作要件
 
 - PHP 8.3+
-- Laravel 12
+- Laravel 12 または 13
 - 整数主キーの `users` テーブル（外部キーが `users.id` を参照します）
 
 ## インストール
@@ -431,6 +431,10 @@ $this->call(\TrustMedical\Toko\Database\Seeders\TokoSeeder::class);
 `resources/boost/guidelines/core.blade.php` にガイドラインを同梱しています。ホストアプリが [Laravel Boost](https://github.com/laravel/boost) を使っていれば自動で読み込まれます。
 
 ## アップグレード
+
+### 0.8 → 0.9
+
+コードやスキーマの変更は不要です。パッケージは **Laravel 12 と 13** に対応しました（`laravel/framework` `^12.0|^13.0`）。`composer update trust-medical/toko` で更新してください。
 
 ### 0.7 → 0.8
 
